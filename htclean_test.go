@@ -18,11 +18,18 @@ var _ = Describe("Htclean", func() {
 			Expect(htc.ProgressNum).To(Equal(0))
 		})
 		It("can read options", func() {
-			hti, _ := NewHTclean(initOpts()...)
-			Expect(hti.JobsNum).To(Equal(4))
-			Expect(hti.OutputPath).To(Equal(testOutput))
+			htc, _ := NewHTclean(initOpts()...)
+			Expect(htc.JobsNum).To(Equal(4))
+			Expect(htc.OutputPath).To(Equal(testOutput))
 		})
+	})
 
+	Describe("Run", func() {
+		It("cleans results", func() {
+			htc, _ := NewHTclean(initOpts()...)
+			err := htc.Run()
+			Expect(err).To(BeNil())
+		})
 	})
 })
 
