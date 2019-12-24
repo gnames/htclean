@@ -1,10 +1,5 @@
 package model
 
-import (
-	"fmt"
-	"strings"
-)
-
 type Decider struct {
 	Rows   [][]string
 	Title  *Title
@@ -23,17 +18,12 @@ func (d *Decider) Decide() {
 	if pageCoef < 1 {
 		pageCoef = 1
 	}
-	fmt.Println(d.Title.ID)
-	fmt.Println(d.Title.OccurNum, d.Title.NamesNum)
-	fmt.Println(d.Title.OccurNum / d.Title.NamesNum)
 	var names []string
 	for k := range d.Title.Names {
 		names = append(names, k)
 	}
-	fmt.Println(strings.Join(names, ", "))
 	stats := d.Title.Stats
 	if stats[MultiHighK] > 0 || (stats[UniK] > 100*pageCoef && repetition < 3) {
-		fmt.Println(stats)
 		d.Accept = true
 		return
 	}
