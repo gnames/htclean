@@ -88,7 +88,7 @@ func (htc *HTclean) collectTitles(ch chan<- [][]string) {
 			}
 			break
 		} else if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 		id := l[model.TitleF.Int()]
 
