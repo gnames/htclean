@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/gnames/htclean/model"
@@ -17,7 +18,7 @@ func (htc *HTclean) Run() error {
 	var wgOut sync.WaitGroup
 
 	wgOut.Add(1)
-	go writer(chOut, &wgOut)
+	go htc.writer(chOut, &wgOut)
 
 	wg.Add(htc.JobsNum)
 	for i := 0; i < htc.JobsNum; i++ {
@@ -31,13 +32,15 @@ func (htc *HTclean) Run() error {
 	return nil
 }
 
-func writer(ch <-chan *model.Decider, wg *sync.WaitGroup) {
+func (htc *HTclean) writer(ch <-chan *model.Decider, wg *sync.WaitGroup) {
 	defer wg.Done()
-	wgood, err := os.Create("names.csv")
+	namePath := filepath.Join(htc.OutputPath, "names.csv")
+	junkPath := filepath.Join(htc.OutputPath, "junk.csv")
+	wgood, err := os.Create(namePath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	wbad, err := os.Create("junk.csv")
+	wbad, err := os.Create(junkPath)
 	if err != nil {
 		log.Fatal(err)
 	}

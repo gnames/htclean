@@ -16,10 +16,10 @@ type Title struct {
 }
 
 type Name struct {
-	OccurNum int
-	Odds     int
-	Match    string
-	Kind     string
+	OccurNum    int
+	Odds        int
+	Match       string
+	Cardinality int
 }
 
 func NewTitle(rows [][]string) *Title {
@@ -42,11 +42,15 @@ func NewTitle(rows [][]string) *Title {
 			if err != nil {
 				log.Fatal(err)
 			}
+			card, err := strconv.Atoi(r[MatchCardinF.Int()])
+			if err != nil {
+				log.Fatal(err)
+			}
 			t.Names[nval] = &Name{
-				OccurNum: 1,
-				Odds:     odds,
-				Match:    r[MatchTypeF.Int()],
-				Kind:     r[MatchKindF.Int()],
+				OccurNum:    1,
+				Odds:        odds,
+				Match:       r[MatchTypeF.Int()],
+				Cardinality: card,
 			}
 		}
 	}
@@ -66,7 +70,7 @@ func NewTitle(rows [][]string) *Title {
 func (t *Title) getStats() {
 	for _, v := range t.Names {
 		t.OccurNum += v.OccurNum
-		if v.Kind == "Uninomial" {
+		if v.Cardinality == 1 {
 			t.updateStat(UniK)
 			continue
 		}

@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/gnames/htclean"
 	homedir "github.com/mitchellh/go-homedir"
@@ -101,10 +102,12 @@ func initConfig() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
+		home = filepath.Join(home, ".config")
+		fmt.Println(home)
 
-		// Search config in home directory with name ".htclean" (without extension).
+		// Search config in home directory with name "htclean" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".htclean")
+		viper.SetConfigName("htclean")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
