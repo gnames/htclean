@@ -7,28 +7,33 @@ import (
 )
 
 type HTclean struct {
-	InputFile   string
-	OutputPath  string
-	JobsNum     int
-	ProgressNum int
+	WorkDir      string
+	InputFile    string
+	OutputPath   string
+	JobsNum      int
+	ProgressNum  int
+	LangFile     string
+	LangTitleIdx int
+	LangPageIdx  int
+	LangIdx      int
 }
 
 type Option func(h *HTclean)
 
-// OptIntput is an absolute path to input csv file. Its has the following
-// fields: timeStamp, titleID, pageNum, nameVerbatim, name, odds, nameType
-func OptInput(s string) Option {
+// OptWorkDir is an absolute path to a directory that contains all existing and
+// future input and output for htclean.
+func OptWorkDir(s string) Option {
 	return func(h *HTclean) {
-		h.InputFile = s
+		h.WorkDir = s
 	}
 }
 
-// OptOutput is an absolute path to a directory where results will be written.
-// If such directory does not exist already, it will be created during
-// initialization of HTindex instance.
-func OptOutput(s string) Option {
+// OptIntputFile is a name of a file located in WorkDir that contains
+// name-finding data to use for htclean. Its has the following fields:
+// timeStamp, titleID, pageNum, nameVerbatim, name, odds, nameType
+func OptInputFile(s string) Option {
 	return func(h *HTclean) {
-		h.OutputPath = s
+		h.InputFile = s
 	}
 }
 
@@ -47,6 +52,35 @@ func OptProgressNum(i int) Option {
 		h.ProgressNum = i
 	}
 
+}
+
+// OptLangFile is a name of a file with the language data. This file should
+// be a valid csv file and should contain TitleID, PageID and Language values.
+func OptLangFile(s string) Option {
+	return func(h *HTclean) {
+		h.LangFile = s
+	}
+}
+
+// OptLangTitleIdx is a field index in LangFile that contains TitleID values.
+func OptLangTitleIdx(i int) Option {
+	return func(h *HTclean) {
+		h.LangTitleIdx = i
+	}
+}
+
+// OptLangPageIdx is a field index in LangFile that contains PageID values.
+func OptLangPageIdx(i int) Option {
+	return func(h *HTclean) {
+		h.LangPageIdx = i
+	}
+}
+
+// OptLangIdx is a field index in LangFile that contains language values.
+func OptLangIdx(i int) Option {
+	return func(h *HTclean) {
+		h.LangIdx = i
+	}
 }
 
 func NewHTclean(opts ...Option) (*HTclean, error) {

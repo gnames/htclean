@@ -42,10 +42,14 @@ var (
 // config purpose is to achieve automatic import of data from the
 // configuration file, if it exists.
 type config struct {
-	Input       string
-	Output      string
-	Jobs        int
-	ProgressNum int
+	WorkDir      string
+	InputFile    string
+	Jobs         int
+	ProgressNum  int
+	LangFile     string
+	LangTitleIdx int
+	LangPageIdx  int
+	LangIdx      int
 }
 
 // rootCmd represents the base command when called without any subcommands
@@ -84,8 +88,6 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.Flags().BoolP("version", "v", false, "htclean version and build timestamp")
-	rootCmd.Flags().StringP("input", "i", "", "path to the input data file")
-	rootCmd.Flags().StringP("output", "o", "", "path to the output directory")
 	rootCmd.Flags().IntP("jobs", "j", 0, "number of workers (jobs)")
 	rootCmd.Flags().IntP("progress", "p", 0, "number of titles in progress report")
 }
@@ -142,39 +144,37 @@ func getOpts() []htclean.Option {
 		log.Fatal(err)
 	}
 
-	if cfg.Input != "" {
-		opts = append(opts, htclean.OptInput(cfg.Input))
+	if cfg.WorkDir != "" {
+		opts = append(opts, htclean.OptWorkDir(cfg.WorkDir))
 	}
-	if cfg.Output != "" {
-		opts = append(opts, htclean.OptOutput(cfg.Output))
+
+	if cfg.InputFile != "" {
+		opts = append(opts, htclean.OptInputFile(cfg.InputFile))
 	}
+
 	if cfg.Jobs > 0 {
 		opts = append(opts, htclean.OptJobs(cfg.Jobs))
 	}
 	if cfg.ProgressNum > 0 {
 		opts = append(opts, htclean.OptProgressNum(cfg.ProgressNum))
 	}
+	if cfg.LangFile != "" {
+		opts = append(opts, htclean.OptLangFile(cfg.LangFile))
+	}
+	if cfg.LangTitleIdx > 0 {
+		opts = append(opts, htclean.OptLangTitleIdx(cfg.LangTitleIdx))
+	}
+	if cfg.LangPageIdx > 0 {
+		opts = append(opts, htclean.OptLangPageIdx(cfg.LangPageIdx))
+	}
+	if cfg.LangIdx > 0 {
+		opts = append(opts, htclean.OptLangIdx(cfg.LangIdx))
+	}
 	return opts
 }
 
 // getFlags appends options with settings from supplied flags.
 func getFlags(opts []htclean.Option, cmd *cobra.Command) []htclean.Option {
-	input, err := cmd.Flags().GetString("input")
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	if input != "" {
-		opts = append(opts, htclean.OptInput(input))
-	}
-	output, err := cmd.Flags().GetString("output")
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	if output != "" {
-		opts = append(opts, htclean.OptOutput(output))
-	}
 	jobs, err := cmd.Flags().GetInt("jobs")
 	if err != nil {
 		fmt.Println(err)
