@@ -22,8 +22,9 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
+	"log"
 
+	"github.com/gnames/htclean"
 	"github.com/spf13/cobra"
 )
 
@@ -32,7 +33,15 @@ var langCmd = &cobra.Command{
 	Use:   "lang",
 	Short: "Adds language field to input file.",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("lang called")
+		opts = getOpts()
+		htc, err := htclean.NewHTclean(opts...)
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = htc.Lang()
+		if err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 

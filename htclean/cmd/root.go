@@ -42,7 +42,7 @@ var (
 // config purpose is to achieve automatic import of data from the
 // configuration file, if it exists.
 type config struct {
-	WorkDir      string
+	WorkPath     string
 	InputFile    string
 	Jobs         int
 	ProgressNum  int
@@ -105,7 +105,6 @@ func initConfig() {
 			os.Exit(1)
 		}
 		home = filepath.Join(home, ".config")
-		fmt.Println(home)
 
 		// Search config in home directory with name "htclean" (without extension).
 		viper.AddConfigPath(home)
@@ -117,6 +116,9 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	} else {
+
+		fmt.Printf("Cannot find config file: %s, or the file is broken.", viper.ConfigFileUsed())
 	}
 }
 
@@ -144,8 +146,8 @@ func getOpts() []htclean.Option {
 		log.Fatal(err)
 	}
 
-	if cfg.WorkDir != "" {
-		opts = append(opts, htclean.OptWorkDir(cfg.WorkDir))
+	if cfg.WorkPath != "" {
+		opts = append(opts, htclean.OptWorkPath(cfg.WorkPath))
 	}
 
 	if cfg.InputFile != "" {

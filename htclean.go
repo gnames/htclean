@@ -3,12 +3,14 @@ package htclean
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
 )
 
 type HTclean struct {
-	WorkDir      string
+	WorkPath     string
 	InputFile    string
+	KeyValPath   string
 	OutputPath   string
 	JobsNum      int
 	ProgressNum  int
@@ -20,15 +22,15 @@ type HTclean struct {
 
 type Option func(h *HTclean)
 
-// OptWorkDir is an absolute path to a directory that contains all existing and
+// OptWorkPath is an absolute path to a directory that contains all existing and
 // future input and output for htclean.
-func OptWorkDir(s string) Option {
+func OptWorkPath(s string) Option {
 	return func(h *HTclean) {
-		h.WorkDir = s
+		h.WorkPath = s
 	}
 }
 
-// OptIntputFile is a name of a file located in WorkDir that contains
+// OptIntputFile is a name of a file located in WorkPath that contains
 // name-finding data to use for htclean. Its has the following fields:
 // timeStamp, titleID, pageNum, nameVerbatim, name, odds, nameType
 func OptInputFile(s string) Option {
@@ -84,7 +86,11 @@ func OptLangIdx(i int) Option {
 }
 
 func NewHTclean(opts ...Option) (*HTclean, error) {
-	htc := &HTclean{JobsNum: runtime.NumCPU()}
+	htc := &HTclean{
+		OutputPath: "output",
+		KeyValPath: "kv",
+		JobsNum:    runtime.NumCPU(),
+	}
 	for _, opt := range opts {
 		opt(htc)
 	}
@@ -93,9 +99,10 @@ func NewHTclean(opts ...Option) (*HTclean, error) {
 }
 
 func (htc *HTclean) setOutputDir() error {
-	path, err := os.Stat(htc.OutputPath)
+	output := filepath.Join(htc.WorkPath, htc.OutputPath)
+	path, err := os.Stat(output)
 	if os.IsNotExist(err) {
-		return os.MkdirAll(htc.OutputPath, 0755)
+		return os.MkdirAll(output, 0755)
 	}
 	if path.Mode().IsRegular() {
 		return fmt.Errorf("'%s' is a file, not a directory", htc.OutputPath)

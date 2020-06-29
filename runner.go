@@ -77,7 +77,7 @@ func worker(ch <-chan [][]string, chOut chan<- *model.Decider,
 func (htc *HTclean) collectTitles(ch chan<- [][]string) {
 	var t string
 	var ts [][]string
-	f, err := os.Open(htc.InputFile)
+	f, err := os.Open(filepath.Join(htc.WorkPath, htc.InputFile))
 	if err != nil {
 		log.Fatal(err)
 	}
